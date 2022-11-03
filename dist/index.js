@@ -13459,53 +13459,104 @@ const core = __importStar(__nccwpck_require__(9855));
 const github = __importStar(__nccwpck_require__(122));
 const action_1 = __nccwpck_require__(6846);
 function run() {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const context = github.context;
             const octokit = new action_1.Octokit();
+            const userLogin = yield getUserLogin(octokit);
             const prNum = context.issue.number;
-            // TODO
-            const userId = 41898282; // when using github-actions[bot] (default)
-            const a = yield octokit.graphql(`
+            const commitIds = yield getCommitIds(octokit);
+            const message = `\
+# :tada: Lucky PR!
+
+commit ids: ${JSON.stringify(commitIds)}
+pr number: ${prNum}
+`;
+            yield updateMessage(octokit, prNum, userLogin, {
+                lucky: true,
+                body: message,
+            });
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
+    });
+}
+function updateMessage(octokit, prNum, userLogin, message) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const context = github.context;
+        const pastComment = yield getFirstComment(octokit, prNum, userLogin);
+        const { lucky, body } = message;
+        if (lucky) {
+            // if there is a comment from the current user and the message is different, update it
+            if (pastComment && pastComment.body !== body) {
+                yield octokit.issues.updateComment(Object.assign(Object.assign({}, context.repo), { comment_id: pastComment.id, body }));
+            }
+            else {
+                // if there is no comment from the current user, create it
+                yield octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: prNum, body }));
+            }
+        }
+        else {
+            // if there is a comment from the current user, delete it
+            if (pastComment) {
+                yield octokit.issues.deleteComment(Object.assign(Object.assign({}, context.repo), { comment_id: pastComment.id }));
+            }
+        }
+    });
+}
+/**
+ * Get the first comment of the current PR by the current user
+ * @param octokit {Octokit} the octokit instance
+ * @param prNum {number} the PR number
+ * @param userLogin {string} the user login name
+ * @returns comment id {LastComment}
+ */
+function getFirstComment(octokit, prNum, userLogin) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const context = github.context;
+        // get comments on the PR
+        const comments = yield octokit.issues.listComments(Object.assign(Object.assign({}, context.repo), { issue_number: prNum }));
+        // find the comment by the current user if it exists
+        for (const comment of comments.data) {
+            if (((_a = comment.user) === null || _a === void 0 ? void 0 : _a.login) === userLogin) {
+                return {
+                    id: comment.id,
+                    body: comment.body_text || "",
+                };
+            }
+        }
+        return null;
+    });
+}
+/**
+ * Get commit ids of the current PR
+ * @param octokit {Octokit} the octokit instance
+ * @returns commit ids {string[]}
+ */
+function getCommitIds(octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const context = github.context;
+        const commits = yield octokit.pulls.listCommits(Object.assign(Object.assign({}, context.repo), { pull_number: context.issue.number }));
+        return commits.data.map((commit) => commit.sha);
+    });
+}
+/**
+ * Get login name of the current user
+ * By default, this returns `github-actions[bot]`
+ * @param octokit {Octokit} the octokit instance
+ * @returns user login {string}
+ */
+function getUserLogin(octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const resp = yield octokit.graphql(`
 query {
   viewer {
     login
   }
 }`);
-            // get comments on the PR
-            const comments = yield octokit.issues.listComments(Object.assign(Object.assign({}, context.repo), { issue_number: prNum }));
-            // get commits on the PR
-            const commits = yield octokit.pulls.listCommits(Object.assign(Object.assign({}, context.repo), { pull_number: prNum }));
-            const commitIds = commits.data.map((commit) => commit.sha);
-            // find the comment by the current user if it exists
-            let myCommentId = null;
-            for (const comment of comments.data) {
-                if (((_a = comment.user) === null || _a === void 0 ? void 0 : _a.id) === userId) {
-                    myCommentId = comment.id;
-                    break;
-                }
-            }
-            const message = `\
-# yay
-
-commit ids: ${JSON.stringify(commitIds)}
-user id: ${userId}
-my comment id: ${myCommentId}
-pr number: ${prNum}
-a: ${JSON.stringify(a)}
-`;
-            // if there is a comment from the current user, update it
-            if (myCommentId) {
-                yield octokit.issues.updateComment(Object.assign(Object.assign({}, context.repo), { comment_id: myCommentId, body: message }));
-            }
-            else {
-                yield octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: prNum, body: message }));
-            }
-        }
-        catch (error) {
-            core.setFailed(error.message);
-        }
+        return resp.viewer.login;
     });
 }
 if (require.main === require.cache[eval('__filename')]) {
