@@ -13452,7 +13452,8 @@ const action_1 = __nccwpck_require__(6846);
 function run() {
     try {
         const context = github.context;
-        const commitIds = [1, 2, 3];
+        // const commitIds = [1, 2, 3];
+        const commitIds = github.context.payload.commits.map((c) => c.id);
         const octokit = new action_1.Octokit();
         const message = `\
 # yay

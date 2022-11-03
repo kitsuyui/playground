@@ -5,7 +5,8 @@ import { Octokit } from "@octokit/action";
 function run() {
   try {
     const context = github.context;
-    const commitIds = [1, 2, 3];
+    // const commitIds = [1, 2, 3];
+    const commitIds = github.context.payload.commits.map((c: any) => c.id);
     const octokit = new Octokit();
     const message = `\
 # yay
