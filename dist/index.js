@@ -13468,8 +13468,10 @@ function run() {
             // TODO
             const userId = 41898282; // when using github-actions[bot] (default)
             const a = yield octokit.graphql(`
-query viewer {
-  login
+query {
+  viewer {
+    login
+  }
 }`);
             // get comments on the PR
             const comments = yield octokit.issues.listComments(Object.assign(Object.assign({}, context.repo), { issue_number: prNum }));

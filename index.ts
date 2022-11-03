@@ -11,8 +11,10 @@ async function run() {
     // TODO
     const userId = 41898282; // when using github-actions[bot] (default)
     const a = await octokit.graphql(`
-query viewer {
-  login
+query {
+  viewer {
+    login
+  }
 }`);
 
     // get comments on the PR
