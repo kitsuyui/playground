@@ -9,8 +9,10 @@ async function run() {
     const prNum = context.issue.number;
 
     // get the current user id
-    const { data: user } = await octokit.request("GET /user");
-    const userId = user.id;
+
+    // const { data: user } = await octokit.request("GET /user");
+    // const userId = user.id;
+    const userId = 123456;
 
     // get comments on the PR
     const comments = await octokit.issues.listComments({
@@ -39,6 +41,7 @@ async function run() {
 # yay
 
 commit ids: ${JSON.stringify(commitIds)}
+user id: ${userId}
 pr number: ${prNum}`;
 
     // if there is a comment from the current user, update it
