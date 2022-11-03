@@ -8,13 +8,8 @@ async function run() {
     const octokit = new Octokit();
     const prNum = context.issue.number;
     // TODO
-    const botName = "github-actions[bot]";
-
-    // get the current user id
-
     // const { data: user } = await octokit.request("GET /user");
-    // const userId = user.id;
-    const username = botName;
+    const userId = 41898282;
 
     // get comments on the PR
     const comments = await octokit.issues.listComments({
@@ -32,11 +27,8 @@ async function run() {
 
     // find the comment by the current user if it exists
     let myCommentId = null;
-    let userIds = [];
     for (const comment of comments.data) {
-      userIds.push(comment.user?.id);
-      userIds.push(comment.user?.name);
-      if (comment.user?.name === username) {
+      if (comment.user?.id === userId) {
         myCommentId = comment.id;
       }
     }
@@ -45,10 +37,9 @@ async function run() {
 # yay
 
 commit ids: ${JSON.stringify(commitIds)}
-user id: ${username}
+user id: ${userId}
 my comment id: ${myCommentId}
-pr number: ${prNum}
-userIds: ${userIds}`;
+pr number: ${prNum}`;
 
     // if there is a comment from the current user, update it
     if (myCommentId) {
