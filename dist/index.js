@@ -13485,7 +13485,7 @@ function buildMessage(context) {
     for (const commitId of commitIds) {
         const result = checkLuckyCommitId(commitId);
         if (result.lucky) {
-            messages.push(`- Commit **${commitId}** is lucky! It contains **${result.match}**!.`);
+            messages.push(`- Commit \`${commitId}\` is lucky! It contains **${result.match}**!.`);
             lucky = true;
         }
     }
