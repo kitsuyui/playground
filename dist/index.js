@@ -4272,7 +4272,7 @@ exports.request = request;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var authToken = __nccwpck_require__(3709);
+var authToken = __nccwpck_require__(4076);
 
 const createActionAuth = function createActionAuth() {
   if (!process.env.GITHUB_ACTION) {
@@ -4294,69 +4294,6 @@ const createActionAuth = function createActionAuth() {
 };
 
 exports.createActionAuth = createActionAuth;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 3709:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-const REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
-const REGEX_IS_INSTALLATION = /^ghs_/;
-const REGEX_IS_USER_TO_SERVER = /^ghu_/;
-async function auth(token) {
-  const isApp = token.split(/\./).length === 3;
-  const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
-  const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
-  const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
-  return {
-    type: "token",
-    token: token,
-    tokenType
-  };
-}
-
-/**
- * Prefix token for usage in the Authorization header
- *
- * @param token OAuth token or JSON Web Token
- */
-function withAuthorizationPrefix(token) {
-  if (token.split(/\./).length === 3) {
-    return `bearer ${token}`;
-  }
-
-  return `token ${token}`;
-}
-
-async function hook(token, request, route, parameters) {
-  const endpoint = request.endpoint.merge(route, parameters);
-  endpoint.headers.authorization = withAuthorizationPrefix(token);
-  return request(endpoint);
-}
-
-const createTokenAuth = function createTokenAuth(token) {
-  if (!token) {
-    throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
-  }
-
-  if (typeof token !== "string") {
-    throw new Error("[@octokit/auth-token] Token passed to createTokenAuth is not a string");
-  }
-
-  token = token.replace(/^(token|bearer) +/i, "");
-  return Object.assign(auth.bind(null, token), {
-    hook: hook.bind(null, token)
-  });
-};
-
-exports.createTokenAuth = createTokenAuth;
 //# sourceMappingURL=index.js.map
 
 
@@ -4437,7 +4374,7 @@ var universalUserAgent = __nccwpck_require__(4870);
 var beforeAfterHook = __nccwpck_require__(5999);
 var request = __nccwpck_require__(7584);
 var graphql = __nccwpck_require__(430);
-var authToken = __nccwpck_require__(4076);
+var authToken = __nccwpck_require__(4333);
 
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
@@ -4604,6 +4541,69 @@ Octokit.VERSION = VERSION;
 Octokit.plugins = [];
 
 exports.Octokit = Octokit;
+//# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ 4333:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+const REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
+const REGEX_IS_INSTALLATION = /^ghs_/;
+const REGEX_IS_USER_TO_SERVER = /^ghu_/;
+async function auth(token) {
+  const isApp = token.split(/\./).length === 3;
+  const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
+  const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
+  const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
+  return {
+    type: "token",
+    token: token,
+    tokenType
+  };
+}
+
+/**
+ * Prefix token for usage in the Authorization header
+ *
+ * @param token OAuth token or JSON Web Token
+ */
+function withAuthorizationPrefix(token) {
+  if (token.split(/\./).length === 3) {
+    return `bearer ${token}`;
+  }
+
+  return `token ${token}`;
+}
+
+async function hook(token, request, route, parameters) {
+  const endpoint = request.endpoint.merge(route, parameters);
+  endpoint.headers.authorization = withAuthorizationPrefix(token);
+  return request(endpoint);
+}
+
+const createTokenAuth = function createTokenAuth(token) {
+  if (!token) {
+    throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
+  }
+
+  if (typeof token !== "string") {
+    throw new Error("[@octokit/auth-token] Token passed to createTokenAuth is not a string");
+  }
+
+  token = token.replace(/^(token|bearer) +/i, "");
+  return Object.assign(auth.bind(null, token), {
+    hook: hook.bind(null, token)
+  });
+};
+
+exports.createTokenAuth = createTokenAuth;
 //# sourceMappingURL=index.js.map
 
 
@@ -13417,6 +13417,66 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 1395:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(9855));
+const github = __importStar(__nccwpck_require__(122));
+const action_1 = __nccwpck_require__(6846);
+function run() {
+    try {
+        const prNum = parseInt(core.getInput("PR_NUMBER"), 0);
+        const context = github.context;
+        const commitIds = [1, 2, 3];
+        if (!prNum) {
+            core.setFailed("No pull request found.");
+            return;
+        }
+        const octokit = new action_1.Octokit();
+        const message = `\
+# yay
+
+commit ids: ${JSON.stringify(commitIds)}
+pr number: ${prNum}`;
+        octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: prNum, body: message }));
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
+}
+if (require.main === require.cache[eval('__filename')]) {
+    run();
+}
+
+
+/***/ }),
+
 /***/ 3812:
 /***/ ((module) => {
 
@@ -13607,41 +13667,12 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-const core = __nccwpck_require__(9855);
-const { Octokit } = __nccwpck_require__(6846);
-const github = __nccwpck_require__(122);
-
-try {
-  const prNum = core.getInput("PR_NUMBER");
-  const context = github.context;
-  // TODO
-  const commitIds = [];
-
-  if (!prNum) {
-    core.setFailed("No pull request found.");
-    return;
-  }
-  const octokit = new Octokit();
-  const message = `\
-# yay
-
-commit ids: ${JSON.stringify(commitIds)}
-pr number: ${prNum}`;
-
-  octokit.issues.createComment({
-    ...context.repo,
-    issue_number: prNum,
-    body: message,
-  });
-} catch (error) {
-  core.setFailed(error.message);
-}
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(1395);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
