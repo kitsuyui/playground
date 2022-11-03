@@ -32,8 +32,10 @@ async function run() {
 
     // find the comment by the current user if it exists
     let myCommentId = null;
+    let userIds = [];
     for (const comment of comments.data) {
-      const commentUserId = comment.user?.id;
+      userIds.push(comment.user?.id);
+      userIds.push(comment.user?.name);
       if (comment.user?.name === username) {
         myCommentId = comment.id;
       }
@@ -45,7 +47,8 @@ async function run() {
 commit ids: ${JSON.stringify(commitIds)}
 user id: ${username}
 my comment id: ${myCommentId}
-pr number: ${prNum}`;
+pr number: ${prNum}
+userIds: ${userIds}`;
 
     // if there is a comment from the current user, update it
     if (myCommentId) {

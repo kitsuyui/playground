@@ -13459,7 +13459,7 @@ const core = __importStar(__nccwpck_require__(9855));
 const github = __importStar(__nccwpck_require__(122));
 const action_1 = __nccwpck_require__(6846);
 function run() {
-    var _a, _b;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const context = github.context;
@@ -13478,9 +13478,11 @@ function run() {
             const commitIds = commits.data.map((commit) => commit.sha);
             // find the comment by the current user if it exists
             let myCommentId = null;
+            let userIds = [];
             for (const comment of comments.data) {
-                const commentUserId = (_a = comment.user) === null || _a === void 0 ? void 0 : _a.id;
-                if (((_b = comment.user) === null || _b === void 0 ? void 0 : _b.name) === username) {
+                userIds.push((_a = comment.user) === null || _a === void 0 ? void 0 : _a.id);
+                userIds.push((_b = comment.user) === null || _b === void 0 ? void 0 : _b.name);
+                if (((_c = comment.user) === null || _c === void 0 ? void 0 : _c.name) === username) {
                     myCommentId = comment.id;
                 }
             }
@@ -13490,7 +13492,8 @@ function run() {
 commit ids: ${JSON.stringify(commitIds)}
 user id: ${username}
 my comment id: ${myCommentId}
-pr number: ${prNum}`;
+pr number: ${prNum}
+userIds: ${userIds}`;
             // if there is a comment from the current user, update it
             if (myCommentId) {
                 yield octokit.issues.updateComment(Object.assign(Object.assign({}, context.repo), { comment_id: myCommentId, body: message }));
