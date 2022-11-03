@@ -13478,6 +13478,7 @@ function run() {
             for (const comment of comments.data) {
                 if (((_a = comment.user) === null || _a === void 0 ? void 0 : _a.id) === userId) {
                     myCommentId = comment.id;
+                    break;
                 }
             }
             const message = `\

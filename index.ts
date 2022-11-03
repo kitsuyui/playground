@@ -30,6 +30,7 @@ async function run() {
     for (const comment of comments.data) {
       if (comment.user?.id === userId) {
         myCommentId = comment.id;
+        break;
       }
     }
 
