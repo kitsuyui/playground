@@ -13479,7 +13479,6 @@ function run() {
                 const commentUserId = (_a = comment.user) === null || _a === void 0 ? void 0 : _a.id;
                 if (commentUserId === userId) {
                     myCommentId = comment.id;
-                    break;
                 }
             }
             const message = `\

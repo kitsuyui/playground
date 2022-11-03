@@ -32,7 +32,6 @@ async function run() {
       const commentUserId = comment.user?.id;
       if (commentUserId === userId) {
         myCommentId = comment.id;
-        break;
       }
     }
 
