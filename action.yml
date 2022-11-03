@@ -1,0 +1,14 @@
+# https://docs.github.com/ja/actions/creating-actions/creating-a-javascript-action#creating-an-action-metadata-file
+name: 'Hello World'
+description: 'Greet someone and record the time'
+inputs:
+  who-to-greet:
+    description: 'Who to greet'
+    required: true
+    default: 'World'
+outputs:
+  time:
+    description: 'The time we greeted you'
+runs:
+  using: 'node16'
+  main: 'index.js'
