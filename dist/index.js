@@ -13466,7 +13466,7 @@ function run() {
             const octokit = new action_1.Octokit();
             const prNum = context.issue.number;
             // TODO
-            const auth = yield octokit.rest.users.getAuthenticated();
+            // const auth = await octokit.rest.users.getAuthenticated();
             const user = yield octokit.request("GET /user");
             const userId = user.data.id;
             // const  userId = auth.data.id;

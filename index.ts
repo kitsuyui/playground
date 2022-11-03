@@ -9,7 +9,7 @@ async function run() {
 
     const prNum = context.issue.number;
     // TODO
-    const auth = await octokit.rest.users.getAuthenticated();
+    // const auth = await octokit.rest.users.getAuthenticated();
     const user = await octokit.request("GET /user");
     const userId = user.data.id;
     // const  userId = auth.data.id;
