@@ -11,4 +11,3 @@ jobs:
         uses: kitsuyui/playground@testing
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.number }}

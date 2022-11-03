@@ -5,9 +5,6 @@ inputs:
   GITHUB_TOKEN:
     description: 'GITHUB_TOKEN'
     required: true
-  PR_NUMBER:
-    description: 'PR_NUMBER'
-    required: true
 runs:
   using: 'node16'
   main: 'dist/index.js'

@@ -4,13 +4,8 @@ import { Octokit } from "@octokit/action";
 
 function run() {
   try {
-    // const prNum = parseInt(core.getInput("PR_NUMBER"), 0);
     const context = github.context;
     const commitIds = [1, 2, 3];
-    // if (!prNum) {
-    //   core.setFailed("No pull request found.");
-    //   return;
-    // }
     const octokit = new Octokit();
     const message = `\
 # yay

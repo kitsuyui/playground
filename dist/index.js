@@ -13451,13 +13451,8 @@ const github = __importStar(__nccwpck_require__(122));
 const action_1 = __nccwpck_require__(6846);
 function run() {
     try {
-        // const prNum = parseInt(core.getInput("PR_NUMBER"), 0);
         const context = github.context;
         const commitIds = [1, 2, 3];
-        // if (!prNum) {
-        //   core.setFailed("No pull request found.");
-        //   return;
-        // }
         const octokit = new action_1.Octokit();
         const message = `\
 # yay
