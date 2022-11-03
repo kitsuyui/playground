@@ -1,15 +1,29 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+const core = require("@actions/core");
+const { Octokit } = require("@octokit/action");
+const github = require("@actions/github");
 
 try {
-  // `who-to-greet` input defined in action metadata file
-  const nameToGreet = core.getInput('who-to-greet');
-  console.log(`Hello ${nameToGreet}!`);
-  const time = (new Date()).toTimeString();
-  core.setOutput("time", time);
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`);
+  const prNum = core.getInput("PR_NUMBER");
+  const context = github.context;
+  // TODO
+  const commitIds = [];
+
+  if (!prNum) {
+    core.setFailed("No pull request found.");
+    return;
+  }
+  const octokit = new Octokit();
+  const message = `\
+# yay
+
+commit ids: ${JSON.stringify(commitIds)}
+pr number: ${prNum}`;
+
+  octokit.issues.createComment({
+    ...context.repo,
+    issue_number: prNum,
+    body: message,
+  });
 } catch (error) {
   core.setFailed(error.message);
 }

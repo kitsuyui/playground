@@ -1,14 +1,13 @@
 # https://docs.github.com/ja/actions/creating-actions/creating-a-javascript-action#creating-an-action-metadata-file
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'show commits'
+description: 'blah blah blah'
 inputs:
-  who-to-greet:
-    description: 'Who to greet'
+  GITHUB_TOKEN:
+    description: 'GITHUB_TOKEN'
     required: true
-    default: 'World'
-outputs:
-  time:
-    description: 'The time we greeted you'
+  PR_NUMBER:
+    description: 'PR_NUMBER'
+    required: true
 runs:
   using: 'node16'
   main: 'dist/index.js'
