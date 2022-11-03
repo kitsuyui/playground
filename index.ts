@@ -9,18 +9,8 @@ async function run() {
     const userLogin = await getUserLogin(octokit);
     const prNum = context.issue.number;
     const commitIds = await getCommitIds(octokit);
-
-    const message = `\
-# :tada: Lucky PR!
-
-commit ids: ${JSON.stringify(commitIds)}
-pr number: ${prNum}
-`;
-
-    await updateMessage(octokit, prNum, userLogin, {
-      lucky: true,
-      body: message,
-    });
+    const message = buildMessage({ commitIds, prNum });
+    await updateMessage(octokit, prNum, userLogin, message);
   } catch (error: any) {
     core.setFailed(error.message);
   }
@@ -36,6 +26,99 @@ interface Comment {
   body: string;
 }
 
+interface LuckyJudgeContext {
+  commitIds: string[];
+  prNum: number;
+}
+
+function buildMessage(context: LuckyJudgeContext): MessageContext {
+  const { commitIds, prNum } = context;
+  const messages = [];
+  let lucky = false;
+
+  if (isEveryDigit7(prNum) || isLuckyNumberBase10(prNum)) {
+    messages.push(`- Now pull request issue number reaches **${prNum}**. It's time to celebrate!`);
+    lucky = true;
+  }
+
+  for (const commitId of commitIds) {
+    const result = checkLuckyCommitId(commitId);
+    if (result.lucky) {
+      messages.push(`- Commit **${commitId}** is lucky! It contains **${result.match}**!.`);
+      lucky = true;
+    }
+  }
+  if (lucky) {
+    return {
+      lucky,
+      body: "# :tada: Lucky commit!\n" + messages.join("\n"),
+    };
+  }
+  return {
+    lucky: false,
+    body: "",
+  }
+}
+
+interface LuckyCommitResult {
+  lucky: boolean;
+  match: string;
+}
+
+/**
+ * check if the commit id is lucky
+ * @param commitId {string} the commit id
+ * @returns {LuckyCommitResult}
+ */
+function checkLuckyCommitId(commitId: string): LuckyCommitResult {
+  const match = commitId.match(/(7{2,})/);
+  if (match) {
+    return {
+      lucky: true,
+      match: match[0],
+    };
+  }
+  return {
+    lucky: false,
+    match: "",
+  };
+}
+
+/**
+ * 77, 777, ... is lucky number
+ * @param num {number} the number to be checked
+ * @returns {boolean} true if the number is lucky
+ */
+function isEveryDigit7(num: number): boolean {
+  if (num.toString().match(/^7{2,}$/)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 10, 100, 1000, ... is lucky number
+ * @param num {number} the number to be checked
+ * @returns {boolean} true if the number is lucky
+ */
+function isLuckyNumberBase10(num: number): boolean {
+  if (num.toString().match(/^[1]0+$/)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Update the comment of the current PR
+ * if lucky and past comment does not exist, create it.
+ * if lucky and past comment exists, update it.
+ * if not lucky, delete the comment.
+ * 
+ * @param octokit {Octokit} the octokit instance
+ * @param prNum {number} the PR number
+ * @param userLogin {string} the user login name
+ * @param message {MessageContext} the message context
+ */
 async function updateMessage(
   octokit: Octokit,
   prNum: number,
