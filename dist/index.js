@@ -13445,29 +13445,63 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(9855));
 const github = __importStar(__nccwpck_require__(122));
 const action_1 = __nccwpck_require__(6846);
 function run() {
-    try {
-        const context = github.context;
-        // const commitIds = [1, 2, 3];
-        const commitIds = github.context.payload.commits.map((c) => c.id);
-        const octokit = new action_1.Octokit();
-        const message = `\
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const context = github.context;
+            const octokit = new action_1.Octokit();
+            const prNum = context.issue.number;
+            // get the current user id
+            const { data: user } = yield octokit.request("GET /user");
+            const userId = user.id;
+            // get comments on the PR
+            const comments = yield octokit.issues.listComments(Object.assign(Object.assign({}, context.repo), { issue_number: prNum }));
+            // get commits on the PR
+            const commits = yield octokit.pulls.listCommits(Object.assign(Object.assign({}, context.repo), { pull_number: prNum }));
+            const commitIds = commits.data.map((commit) => commit.sha);
+            // find the comment by the current user if it exists
+            let myCommentId = null;
+            for (const comment of comments.data) {
+                const commentUserId = (_a = comment.user) === null || _a === void 0 ? void 0 : _a.id;
+                if (commentUserId === userId) {
+                    myCommentId = comment.id;
+                    break;
+                }
+            }
+            const message = `\
 # yay
 
 commit ids: ${JSON.stringify(commitIds)}
-pr number: ${context.issue.number}`;
-        octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: context.issue.number, body: message }));
-    }
-    catch (error) {
-        core.setFailed(error.message);
-    }
+pr number: ${prNum}`;
+            // if there is a comment from the current user, update it
+            if (myCommentId) {
+                yield octokit.issues.updateComment(Object.assign(Object.assign({}, context.repo), { comment_id: myCommentId, body: message }));
+            }
+            else {
+                yield octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: prNum, body: message }));
+            }
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
+    });
 }
 if (require.main === require.cache[eval('__filename')]) {
-    run();
+    run().then(() => { });
 }
 
 
