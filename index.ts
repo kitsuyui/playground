@@ -4,23 +4,22 @@ import { Octokit } from "@octokit/action";
 
 function run() {
   try {
-    const prNum = parseInt(core.getInput("PR_NUMBER"), 0);
+    // const prNum = parseInt(core.getInput("PR_NUMBER"), 0);
     const context = github.context;
     const commitIds = [1, 2, 3];
-    if (!prNum) {
-      core.setFailed("No pull request found.");
-      return;
-    }
+    // if (!prNum) {
+    //   core.setFailed("No pull request found.");
+    //   return;
+    // }
     const octokit = new Octokit();
     const message = `\
 # yay
 
 commit ids: ${JSON.stringify(commitIds)}
-pr number: ${prNum}`;
-
+pr number: ${context.issue.number}`;
     octokit.issues.createComment({
       ...context.repo,
-      issue_number: prNum,
+      issue_number: context.issue.number,
       body: message,
     });
   } catch (error: any) {
