@@ -13466,8 +13466,9 @@ function run() {
             const octokit = new action_1.Octokit();
             const prNum = context.issue.number;
             // TODO
-            // const { data: user } = await octokit.request("GET /user");
-            const userId = 41898282;
+            const auth = yield octokit.rest.users.getAuthenticated();
+            const userId = auth.data.id;
+            // const userId = 41898282;
             // get comments on the PR
             const comments = yield octokit.issues.listComments(Object.assign(Object.assign({}, context.repo), { issue_number: prNum }));
             // get commits on the PR

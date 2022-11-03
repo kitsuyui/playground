@@ -6,10 +6,12 @@ async function run() {
   try {
     const context = github.context;
     const octokit = new Octokit();
+
     const prNum = context.issue.number;
     // TODO
-    // const { data: user } = await octokit.request("GET /user");
-    const userId = 41898282;
+    const auth = await octokit.rest.users.getAuthenticated();
+    const userId = auth.data.id;
+    // const userId = 41898282;
 
     // get comments on the PR
     const comments = await octokit.issues.listComments({
