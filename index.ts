@@ -7,12 +7,14 @@ async function run() {
     const context = github.context;
     const octokit = new Octokit();
     const prNum = context.issue.number;
+    // TODO
+    const botName = "github-actions[bot]";
 
     // get the current user id
 
     // const { data: user } = await octokit.request("GET /user");
     // const userId = user.id;
-    const username = context.actor;
+    const username = botName;
 
     // get comments on the PR
     const comments = await octokit.issues.listComments({
@@ -42,6 +44,7 @@ async function run() {
 
 commit ids: ${JSON.stringify(commitIds)}
 user id: ${username}
+my comment id: ${myCommentId}
 pr number: ${prNum}`;
 
     // if there is a comment from the current user, update it

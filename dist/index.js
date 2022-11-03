@@ -13465,10 +13465,12 @@ function run() {
             const context = github.context;
             const octokit = new action_1.Octokit();
             const prNum = context.issue.number;
+            // TODO
+            const botName = "github-actions[bot]";
             // get the current user id
             // const { data: user } = await octokit.request("GET /user");
             // const userId = user.id;
-            const username = context.actor;
+            const username = botName;
             // get comments on the PR
             const comments = yield octokit.issues.listComments(Object.assign(Object.assign({}, context.repo), { issue_number: prNum }));
             // get commits on the PR
@@ -13487,6 +13489,7 @@ function run() {
 
 commit ids: ${JSON.stringify(commitIds)}
 user id: ${username}
+my comment id: ${myCommentId}
 pr number: ${prNum}`;
             // if there is a comment from the current user, update it
             if (myCommentId) {
