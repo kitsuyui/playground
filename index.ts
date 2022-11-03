@@ -10,8 +10,10 @@ async function run() {
     const prNum = context.issue.number;
     // TODO
     const auth = await octokit.rest.users.getAuthenticated();
-    const userId = auth.data.id;
-    // const userId = 41898282;
+    const user = await octokit.request("GET /user");
+    const userId = user.data.id;
+    // const  userId = auth.data.id;
+    // const userId = 41898282; // when using github-actions[bot] (default)
 
     // get comments on the PR
     const comments = await octokit.issues.listComments({
