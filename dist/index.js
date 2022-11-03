@@ -13466,11 +13466,11 @@ function run() {
             const octokit = new action_1.Octokit();
             const prNum = context.issue.number;
             // TODO
-            // const auth = await octokit.rest.users.getAuthenticated();
-            const user = yield octokit.request("GET /user");
-            const userId = user.data.id;
-            // const  userId = auth.data.id;
-            // const userId = 41898282; // when using github-actions[bot] (default)
+            const userId = 41898282; // when using github-actions[bot] (default)
+            const a = yield octokit.graphql(`
+query viewer {
+  login
+}`);
             // get comments on the PR
             const comments = yield octokit.issues.listComments(Object.assign(Object.assign({}, context.repo), { issue_number: prNum }));
             // get commits on the PR
@@ -13490,7 +13490,9 @@ function run() {
 commit ids: ${JSON.stringify(commitIds)}
 user id: ${userId}
 my comment id: ${myCommentId}
-pr number: ${prNum}`;
+pr number: ${prNum}
+a: ${JSON.stringify(a)}
+`;
             // if there is a comment from the current user, update it
             if (myCommentId) {
                 yield octokit.issues.updateComment(Object.assign(Object.assign({}, context.repo), { comment_id: myCommentId, body: message }));

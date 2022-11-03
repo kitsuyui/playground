@@ -9,11 +9,11 @@ async function run() {
 
     const prNum = context.issue.number;
     // TODO
-    // const auth = await octokit.rest.users.getAuthenticated();
-    const user = await octokit.request("GET /user");
-    const userId = user.data.id;
-    // const  userId = auth.data.id;
-    // const userId = 41898282; // when using github-actions[bot] (default)
+    const userId = 41898282; // when using github-actions[bot] (default)
+    const a = await octokit.graphql(`
+query viewer {
+  login
+}`);
 
     // get comments on the PR
     const comments = await octokit.issues.listComments({
@@ -44,7 +44,9 @@ async function run() {
 commit ids: ${JSON.stringify(commitIds)}
 user id: ${userId}
 my comment id: ${myCommentId}
-pr number: ${prNum}`;
+pr number: ${prNum}
+a: ${JSON.stringify(a)}
+`;
 
     // if there is a comment from the current user, update it
     if (myCommentId) {
