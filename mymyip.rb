@@ -2,6 +2,8 @@ require "formula"
 
 class Mymyip < Formula
   homepage "https://github.com/kitsuyui/myip"
+  head "https://github.com/kitsuyui/myip.git"
+  version "v0.3.4"
 
   if Hardware::CPU.is_64_bit?
     url "https://github.com/kitsuyui/myip/releases/download/v0.3.4/myip_darwin_amd64"
@@ -10,9 +12,6 @@ class Mymyip < Formula
     url "https://github.com/kitsuyui/myip/releases/download/v0.3.4/myip_darwin_386"
     sha256 "57e37ca75d3c2ed45b735ade5f063a2715953b7990b60dcdf9599f2e3f58e1f8"
   end
-
-  head "https://github.com/kitsuyui/myip.git"
-  version "v0.3.4"
 
   def install
     if Hardware::CPU.is_64_bit?
