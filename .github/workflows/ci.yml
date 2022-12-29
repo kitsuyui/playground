@@ -9,3 +9,7 @@ jobs:
       - run: |
           brew tap kitsuyui/playground
           brew update
+          brew install mymyip
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_NO_ANALYTICS: 1
