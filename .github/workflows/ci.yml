@@ -1,5 +1,10 @@
 name: macOS installation
-on: push
+on:
+  push:
+    branches:
+      - '*'
+  schedule:
+    - cron: '45 4 * * *'
 
 jobs:
   test_installation:
@@ -9,12 +14,17 @@ jobs:
     runs-on: ${{ matrix.macos }}
     steps:
       - uses: actions/checkout@v3
+
       - run: |
           # URL を指定しないと https://github.com/kitsuyui/homebrew-playground を見に行くらしい
           brew tap kitsuyui/playground https://github.com/kitsuyui/playground
+
+      - run: |
           cd /usr/local/Homebrew/Library/Taps/kitsuyui/homebrew-playground/
           git checkout ${{ github.ref_name }}  # このブランチをテストしたい
+        if: ${{ github.ref_name != 'master' }}
 
+      - run: |
           uname -m
           brew install mymyip
           mymyip --help
