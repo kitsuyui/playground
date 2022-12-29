@@ -1,0 +1,11 @@
+name: macOS installation
+on: push
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          brew tap kitsuyui/playground
+          brew update
