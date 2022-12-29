@@ -9,5 +9,8 @@ jobs:
       - run: |
           # URL を指定しないと https://github.com/kitsuyui/homebrew-playground を見に行くらしい
           brew tap kitsuyui/playground https://github.com/kitsuyui/playground
-          brew update
+          cd /usr/local/Homebrew/Library/Taps/kitsuyui/homebrew-playground/
+          git checkout ${{ github.ref_name }}  # このブランチをテストしたい
           brew install mymyip
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1

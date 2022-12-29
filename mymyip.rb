@@ -1,6 +1,6 @@
 require "formula"
 
-class Myip < Formula
+class Mymyip < Formula
   homepage "https://github.com/kitsuyui/myip"
 
   if Hardware::CPU.is_64_bit?
