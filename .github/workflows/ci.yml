@@ -7,10 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          git config --global url.git@github.com:.insteadOf https://github.com/
-          brew tap kitsuyui/playground
+          # URL を指定しないと https://github.com/kitsuyui/homebrew-playground を見に行くらしい
+          brew tap kitsuyui/playground https://github.com/kitsuyui/playground
           brew update
           brew install mymyip
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_NO_ANALYTICS: 1
