@@ -6,7 +6,6 @@ jobs:
     strategy:
       matrix:
         macos: [macos-11, macos-12]
-        arch: [x86_64, arm64]
     runs-on: ${{ matrix.macos }}
     steps:
       - uses: actions/checkout@v3
@@ -17,9 +16,8 @@ jobs:
           git checkout ${{ github.ref_name }}  # このブランチをテストしたい
 
           uname -m
-          arch -${{ matrix.arch }} uname -m
-          arch -${{ matrix.arch }} brew install mymyip
-          arch -${{ matrix.arch }} mymyip --help
+          brew install mymyip
+          mymyip --help
 
         env:
           HOMEBREW_NO_AUTO_UPDATE: 1
