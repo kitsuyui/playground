@@ -6,6 +6,7 @@ jobs:
     strategy:
       matrix:
         macos: [macos-11, macos-12]
+        arch: [x86_64, arm64]
     runs-on: ${{ matrix.macos }}
     steps:
       - uses: actions/checkout@v3
@@ -14,6 +15,10 @@ jobs:
           brew tap kitsuyui/playground https://github.com/kitsuyui/playground
           cd /usr/local/Homebrew/Library/Taps/kitsuyui/homebrew-playground/
           git checkout ${{ github.ref_name }}  # このブランチをテストしたい
-          brew install mymyip
+
+          arch -${{ matrix.arch }} uname -m
+          arch -${{ matrix.arch }} brew install mymyip
+          arch -${{ matrix.arch }} mymyip --help
+
         env:
           HOMEBREW_NO_AUTO_UPDATE: 1
