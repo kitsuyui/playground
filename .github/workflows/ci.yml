@@ -16,6 +16,7 @@ jobs:
           cd /usr/local/Homebrew/Library/Taps/kitsuyui/homebrew-playground/
           git checkout ${{ github.ref_name }}  # このブランチをテストしたい
 
+          uname -m
           arch -${{ matrix.arch }} uname -m
           arch -${{ matrix.arch }} brew install mymyip
           arch -${{ matrix.arch }} mymyip --help
