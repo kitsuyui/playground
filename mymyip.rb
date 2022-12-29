@@ -1,24 +1,19 @@
 require "formula"
 
-class Myip < Formula
+class Mymyip < Formula
   homepage "https://github.com/kitsuyui/myip"
+  head "https://github.com/kitsuyui/myip.git"
+  version "v0.3.8"
 
-  if Hardware::CPU.is_64_bit?
-    url "https://github.com/kitsuyui/myip/releases/download/v0.3.4/myip_darwin_amd64"
-    sha256 "aeef1fccb763e4ddccc22bf6616063ac5a0c20d80c8db31b0cb13ca2cc48f85e"
-  else
-    url "https://github.com/kitsuyui/myip/releases/download/v0.3.4/myip_darwin_386"
-    sha256 "57e37ca75d3c2ed45b735ade5f063a2715953b7990b60dcdf9599f2e3f58e1f8"
+  if Hardware::CPU.arm? and Hardware::CPU.is_64_bit?
+    url "https://github.com/kitsuyui/myip/releases/download/v0.3.8/myip_0.3.8_darwin_arm64.tar.gz"
+    sha256 "7d82590771b750c934d955e9bcbd9505fd45f028ef31f876c3d25c6056cee362"
+  elsif Hardware::CPU.intel? and Hardware::CPU.is_64_bit?
+    url "https://github.com/kitsuyui/myip/releases/download/v0.3.8/myip_0.3.8_darwin_amd64.tar.gz"
+    sha256 "c4808bc2258dfc77ca138e0b8feeac1c7cec40c5b0d962ec4a1ccb7e02d1cd7b"
   end
 
-  head "https://github.com/kitsuyui/myip.git"
-  version "v0.3.4"
-
   def install
-    if Hardware::CPU.is_64_bit?
-      bin.install "myip_darwin_amd64" => "mymyip"
-    else
-      bin.install "myip_darwin_386" => "mymyip"
-    end
+    bin.install "myip" => "mymyip"
   end
 end
