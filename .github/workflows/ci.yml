@@ -2,8 +2,11 @@ name: macOS installation
 on: push
 
 jobs:
-  build:
-    runs-on: macos-latest
+  test_installation:
+    strategy:
+      matrix:
+        macos: [macos-11, macos-12]
+    runs-on: ${{ matrix.macos }}
     steps:
       - uses: actions/checkout@v3
       - run: |
