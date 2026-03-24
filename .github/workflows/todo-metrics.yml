@@ -9,7 +9,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -110,3 +110,37 @@ jobs:
           path: .tmp/todo-metrics/todo-badge.svg
           archive: false
           retention-days: 30
+
+      - name: Publish badge assets branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          ASSET_BRANCH: badge-assets
+        run: |
+          mkdir -p .tmp/badge-assets
+          cp .tmp/todo-metrics/current.json .tmp/badge-assets/current.json
+          cp .tmp/todo-metrics/todo-badge.svg .tmp/badge-assets/todo-badge.svg
+
+          if git ls-remote --exit-code origin "${ASSET_BRANCH}" >/dev/null 2>&1; then
+            git fetch origin "${ASSET_BRANCH}" --depth=1
+            git worktree add .tmp/badge-assets-worktree "origin/${ASSET_BRANCH}"
+          else
+            git worktree add --detach .tmp/badge-assets-worktree
+            cd .tmp/badge-assets-worktree
+            git checkout --orphan "${ASSET_BRANCH}"
+            find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+            cd -
+          fi
+
+          cp .tmp/badge-assets/current.json .tmp/badge-assets-worktree/current.json
+          cp .tmp/badge-assets/todo-badge.svg .tmp/badge-assets-worktree/todo-badge.svg
+
+          cd .tmp/badge-assets-worktree
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add current.json todo-badge.svg
+          if git diff --cached --quiet; then
+            echo "No asset changes to publish."
+            exit 0
+          fi
+          git commit -m "Update TODO badge assets"
+          git push origin HEAD:"${ASSET_BRANCH}"
