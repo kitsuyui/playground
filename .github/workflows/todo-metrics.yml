@@ -127,6 +127,7 @@ jobs:
             git worktree add --detach .tmp/badge-assets-worktree
             cd .tmp/badge-assets-worktree
             git checkout --orphan "${ASSET_BRANCH}"
+            git rm -rf --ignore-unmatch .
             find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
             cd -
           fi
