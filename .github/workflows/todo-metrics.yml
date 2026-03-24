@@ -1,0 +1,112 @@
+name: TODO Metrics
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  todo-metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Count TODOs in current revision
+        run: |
+          mkdir -p .tmp/todo-metrics
+          python scripts/todo_metrics.py count --output .tmp/todo-metrics/current.json
+          python scripts/todo_metrics.py badge --input .tmp/todo-metrics/current.json --output .tmp/todo-metrics/todo-badge.svg
+
+      - name: Count TODOs at merge base
+        if: github.event_name == 'pull_request'
+        id: merge_base
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch origin "${BASE_REF}" --depth=1
+          merge_base="$(git merge-base HEAD "origin/${BASE_REF}")"
+          echo "merge_base=${merge_base}" >> "$GITHUB_OUTPUT"
+          python scripts/todo_metrics.py count --rev "${merge_base}" --output .tmp/todo-metrics/base.json
+
+      - name: Comment TODO delta on pull request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        env:
+          BASE_JSON: .tmp/todo-metrics/base.json
+          CURRENT_JSON: .tmp/todo-metrics/current.json
+          MERGE_BASE: ${{ steps.merge_base.outputs.merge_base }}
+        with:
+          script: |
+            const fs = require("fs");
+            const marker = "<!-- todo-metrics-comment -->";
+            const base = JSON.parse(fs.readFileSync(process.env.BASE_JSON, "utf8"));
+            const current = JSON.parse(fs.readFileSync(process.env.CURRENT_JSON, "utf8"));
+            const delta = current.count - base.count;
+            const deltaLabel = delta > 0 ? `+${delta}` : `${delta}`;
+            const body = [
+              marker,
+              "## TODO metrics",
+              "",
+              `- Base (${process.env.MERGE_BASE.slice(0, 7)}): ${base.count}`,
+              `- Head (${current.reference.slice(0, 7)}): ${current.count}`,
+              `- Delta: ${deltaLabel}`,
+            ].join("\n");
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) =>
+              comment.user.type === "Bot" && comment.body.includes(marker)
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
+
+      - name: Upload TODO count artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v7
+        with:
+          name: todo-count.json
+          path: .tmp/todo-metrics/current.json
+          archive: false
+          retention-days: 30
+
+      - name: Upload TODO badge artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v7
+        with:
+          name: todo-badge.svg
+          path: .tmp/todo-metrics/todo-badge.svg
+          archive: false
+          retention-days: 30
