@@ -3,5 +3,8 @@ export function plannedGreeting(name) {
   if (typeof name !== 'string') {
     throw new TypeError(`name must be a string, got ${typeof name}`);
   }
+  if (name === '') {
+    throw new RangeError('name must not be empty');
+  }
   return `Hello, ${name}!`;
 }
